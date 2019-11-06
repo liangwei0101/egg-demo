@@ -1,7 +1,6 @@
 import { Application } from 'egg';
-import { Document, Model, Schema } from 'mongoose';
 
-let UserModel: any;
+import { Document, Model, Schema, model } from 'mongoose';
 
 /**
   * 定义一个User的Schema
@@ -23,6 +22,25 @@ const UserSchema: Schema = new Schema({
 // userNo 为索引
 UserSchema.index({ userNo: 1, });
 
+// UserSchema的实例方法
+UserSchema.methods.userInstanceTestMethods = function () {
+
+  let user: IUser = new UserModel();
+  user.userName = '我是实例化方法测试';
+  user.userNo = 9527;
+
+  return user;
+};
+
+// UserSchema的实例方法
+UserSchema.statics.userStaticTestMethods = function () {
+
+  let user: IUser = new UserModel();
+  user.userName = '我是静态方法测试';
+  user.userNo = 9528;
+
+  return user;
+};
 
 /**
   * 用户字段接口
@@ -41,27 +59,29 @@ export interface IUser {
 export interface IUserDocument extends IUser, Document {
 
   /**
-  * 实例方法
+  * 实例方法接口（名称需要和Schema的方法名一样）
   */
-  // userFucition: () => IUser;
+ userInstanceTestMethods: () => IUser;
 }
 
 /**
-  * 静态方法
+  * 静态方法接口
 */
 export interface IUserModel extends Model<IUserDocument> {
 
   /**
    * 静态方法
    */
-  // static1 :() => string
+  userStaticTestMethods :() => IUser
 }
+
+let UserModel = model<IUserDocument, IUserModel>('User', UserSchema);
 
 // egg-mongoose注入
 export default (app: Application): Model<IUserDocument> => {
 
   const mongoose = app.mongoose;
-  
+
   UserModel = mongoose.model<IUserDocument, IUserModel>('User', UserSchema);
 
   return UserModel;

@@ -10,6 +10,17 @@ export default (appInfo: EggAppInfo) => {
   // add your egg config in here
   config.middleware = [];
 
+  config.security = {
+    csrf: {
+      enable: false
+    }
+  };
+
+  config.mongoose = {
+    url: process.env.EGG_MONGODB_URL || 'mongodb://127.0.0.1/egg-demo', 
+    options: {},
+  };
+
   // add your special config in here
   const bizConfig = {
     sourceUrl: `https://github.com/eggjs/examples/tree/master/${appInfo.name}`,
