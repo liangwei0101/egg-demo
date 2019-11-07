@@ -12,12 +12,12 @@ export default (appInfo: EggAppInfo) => {
 
   config.security = {
     csrf: {
-      enable: false
-    }
+      enable: false,
+    },
   };
 
   config.mongoose = {
-    url: process.env.EGG_MONGODB_URL || 'mongodb://127.0.0.1/egg-demo', 
+    url: process.env.EGG_MONGODB_URL || 'mongodb://127.0.0.1/egg-demo',
     options: {},
   };
 

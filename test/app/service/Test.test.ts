@@ -10,7 +10,19 @@ describe('test/app/service/Test.test.js', () => {
   });
 
   it('sayHi', async () => {
-    const result = await ctx.service.test.sayHi('egg');
+    const result = await ctx.service.user.sayHi('egg');
     assert(result === 'hi, egg');
   });
+
+
+  it('testUserInstanceServiceMethods', async () => {
+    const user = await ctx.service.user.testUserInstanceServiceMethods();
+    assert(user.userName == '我是实例化方法测试');
+  });
+
+  it('testUserInstanceServiceMethods', async () => {
+    const user = await ctx.service.user.testUserStaticServiceMethods();
+    assert(user.userName == '我是静态方法测试');
+  });
+
 });

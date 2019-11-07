@@ -1,5 +1,4 @@
 import { Application } from 'egg';
-
 import { Document, Model, Schema, model } from 'mongoose';
 
 /**
@@ -12,11 +11,11 @@ const UserSchema: Schema = new Schema({
     index: true,
   },
 
-  userName: String
+  userName: String,
 },
   {
     timestamps: true,
-  }
+  },
 );
 
 // userNo 为索引
@@ -25,7 +24,7 @@ UserSchema.index({ userNo: 1, });
 // UserSchema的实例方法
 UserSchema.methods.userInstanceTestMethods = function () {
 
-  let user: IUser = new UserModel();
+  const user: IUser = new UserModel();
   user.userName = '我是实例化方法测试';
   user.userNo = 9527;
 
@@ -35,7 +34,7 @@ UserSchema.methods.userInstanceTestMethods = function () {
 // UserSchema的实例方法
 UserSchema.statics.userStaticTestMethods = function () {
 
-  let user: IUser = new UserModel();
+  const user: IUser = new UserModel();
   user.userName = '我是静态方法测试';
   user.userNo = 9528;
 
@@ -47,11 +46,10 @@ UserSchema.statics.userStaticTestMethods = function () {
 */
 export interface IUser {
 
-  userNo: number
+  userNo: number;
 
-  userName: string
+  userName: string;
 }
-
 
 /**
   * 用户Document（实例方法在这写）
@@ -72,19 +70,15 @@ export interface IUserModel extends Model<IUserDocument> {
   /**
    * 静态方法
    */
-  userStaticTestMethods :() => IUser
+  userStaticTestMethods: () => IUser;
 }
 
-let UserModel = model<IUserDocument, IUserModel>('User', UserSchema);
+export const UserModel = model<IUserDocument, IUserModel>('User', UserSchema);
 
 // egg-mongoose注入
-export default (app: Application): Model<IUserDocument> => {
+export default (app: Application) => {
 
   const mongoose = app.mongoose;
-
-  UserModel = mongoose.model<IUserDocument, IUserModel>('User', UserSchema);
-
-  return UserModel;
-}
-
-export { UserModel, UserSchema } 
+  // 这里为了挂载到ctx中，让正常ctx.model.User也能使用
+  mongoose.model<IUserDocument, IUserModel>('User', UserSchema);
+};

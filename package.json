@@ -13,7 +13,7 @@
     "dev": "egg-bin dev",
     "debug": "egg-bin debug",
     "test-local": "egg-bin test",
-    "test": "npm run lint -- --fix && npm run test-local",
+    "test": "npm run test-local",
     "cov": "egg-bin cov",
     "tsc": "ets && tsc -p tsconfig.json",
     "ci": "npm run lint && npm run cov && npm run tsc",
@@ -36,9 +36,9 @@
     "egg-ci": "^1.8.0",
     "egg-mock": "^3.16.0",
     "tslib": "^1.9.0",
-    "tslint": "^5.0.0",
+    "tslint": "^5.20.1",
     "tslint-config-egg": "^1.0.0",
-    "typescript": "^3.0.0"
+    "typescript": "^3.7.2"
   },
   "engines": {
     "node": ">=8.9.0"
