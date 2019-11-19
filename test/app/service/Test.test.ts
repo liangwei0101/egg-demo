@@ -14,6 +14,10 @@ describe('test/app/service/Test.test.js', () => {
     assert(result === 'hi, egg');
   });
 
+  it('addUserByScheduleTest', async () => {
+    const result = await ctx.service.user.addUserByScheduleTest();
+    assert(result.userNo === 99);
+  });
 
   it('testUserInstanceServiceMethods', async () => {
     const user = await ctx.service.user.testUserInstanceServiceMethods();

@@ -1,31 +1,24 @@
+
 import { Subscription } from 'egg'
-import { UserModel } from '../model/User'
 
+/**
+* 间隔时间段，定时任务测试
+*/
 export default class AddUserJob extends Subscription {
-
   static get schedule() {
     return {
-      interval: '10m', // 60s 分钟间隔
+      interval: '60s', // 60s 间隔
       type: 'all', // 指定所有的 worker 都需要执行
     };
   }
 
-  // subscribe 是真正定时任务执行时被运行的函数
   async subscribe() {
-    console.log('我是60s执行一次的定时任务！！' + new Date())
+    const ctx = this.ctx;
 
-    const user = new UserModel();
-    user.userName = 'add user';
-    user.userNo = Math.floor(Math.random()*10);
-    console.log('====================')
-    console.log(user)
-    console.log('====================')
-    const aa = await user.save();
-    console.log('====================1')
-    console.log(aa)
-    console.log('====================1')
+    console.log('每60s执行一次增加User的定时任务！！' + new Date())
 
+    const test = await ctx.service.user.addUserByScheduleTest();
 
+    console.log(test)
   }
-
 }

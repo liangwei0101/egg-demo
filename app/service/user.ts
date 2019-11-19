@@ -14,6 +14,17 @@ export default class UserService extends Service {
     return `hi, ${name}`;
   }
 
+  public async addUserByScheduleTest() {
+
+    const user = new UserModel();
+    user.userName = 'add user';
+    user.userNo = 99;
+
+    const res = await UserModel.create(user);
+
+    return res
+  }
+
   /**
   * 测试用户的实例方法
   */
