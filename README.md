@@ -8,6 +8,8 @@ $ yarn dev
 $ open http://localhost:7001/
 ```
 
+# Node 使用 Egg 框架 之 上TS 的教程（一）
+
 ### Node + Egg + TS + Mongodb + Resetful
 
 1. 作为一个从优美的、面向对象的、专业的：C、C++、C#、JAVA一路过来的程序员，开始让我写JS，我是拒绝的。这哪里是在写代码，明明是在写 **console.log()** 啊！！! 连少个参数、参数类型不对都不告诉我，我太难了。
@@ -259,3 +261,178 @@ export default (app: Application) => {
 看见他打绿色的 √ √ 我就很开心。
 
 今天有点晚了，后面给大家写：定时任务，GraphQL，redis，部署等内容。
+
+# Node 使用 Egg 框架 之 上TS 的教程（二）
+
+# Node + Egg + TS + Mongodb + Resetful + graphql
+
+**本节课内容： graphql 和 egg 定时任务**
+
+##### 运行环境： Node ，Yarn/NPM，MongoDB
+
+梁老师又开课啦！上节课讲到Node使用Mongodb上TS的一些操作，[上节课的链接]([https://www.jianshu.com/p/5fbade6874c1](https://www.jianshu.com/p/5fbade6874c1)
+)。
+
+老规矩，本地教程的地址为：[https://github.com/liangwei0101/egg-demo/tree/egg-ts-mongoose-template](https://links.jianshu.com/go?to=https%3A%2F%2Fgithub.com%2Fliangwei0101%2Fegg-demo%2Ftree%2Fegg-ts-mongoose-template)
+
+
+```
+egg-demo
+├── app
+│   ├── controller (前端的请求会到这里来！)
+│   │   └── home.ts
+│   ├── model（数据库表结构抽象出来的模型）
+│   │   └── User.ts
+│   ├── graphql（graphql文件夹）
+│   │   └── mutation（所有的mutation声明文件夹）
+│   │       └── schema.graphql（所有的mutation声明文件）
+│   │   └── query（所有的query声明文件夹）
+│   │        └── schema.graphql（所有的query声明文件）
+│   │   └── user（user model的声明和实现）
+│   │        └── resolver.js（声明函数的实现）
+│   │        └── schema.graphql（user schema的字段声明）
+│   ├── service（controller 层不建议承载过多的业务，业务重时放在service层）
+│   │   └── user.ts
+│   ├── schedule（定时任务文件夹）
+│   │   └── addUserJob.ts
+│   └── router.ts （Url的相关映射）
+├── config （框架的配置文件）
+│   ├── config.default.ts
+│   ├── config.local.ts
+│   ├── config.prod.ts
+│   └── plugin.ts
+├── test （测试文件夹）
+│   └── **/*.test.ts
+├── typings （目录用于放置 d.ts 文件）
+│   └── **/*.d.ts
+├── README.md
+├── package.json
+├── tsconfig.json
+└── tslint.json
+```
+本次教程增加了**schedule**文件夹和**graphql**文件夹。
+
+##### egg 使用 graphql
+
+graphql 只是一种restful的一种不足的一种解决方案吧。它就是在 **数据库操作完以后，将字段的返回权交给了用户，意思是，用户想返回哪个字段就返回哪个字段，假如说，我pc端和移动端公用一套接口，pc端需要100个字段，移动端需要10个字段，使用resetful无论你需不需要，都会给你返回，而graphql很好的解决了这个问题，因为选择权在调用方。**
+
+是不是感觉很神奇，js和ts可以共存。此教程，先上一个js和ts版本共存的，等下期教程将使用纯ts教程。使用js的问题是，在 resolver.js 中，将不能享受ts代码的代码提示和编译检查。但是很多项目可能都是之前存在的项目，此类js不能立马重构或者改动。共存也是有意义的，逐步重构或者重写吧。
+
+```
+// plugin.ts
+const plugin: EggPlugin = {
+  // mongoose
+  mongoose: {
+    enable: true,
+    package: 'egg-mongoose',
+  },
+  // 添加 graphql
+  graphql: {
+    enable: true,
+    package: 'egg-graphql',
+  },
+};
+```
+```
+// config.default.ts
+  config.graphql = {
+    router: '/graphql',
+    // 是否加载到 app 上，默认开启
+    app: true,
+    // 是否加载到 agent 上，默认关闭
+    agent: false,
+    // 是否加载开发者工具 graphiql, 默认开启。路由同 router 字段。使用浏览器打开该可见。
+    graphiql: true,
+  };
+
+  config.middleware = ['graphql'];
+```
+**使用user举例**：
+定义User schema 的返回字段
+```
+//  schema 
+type User {
+  _id: String
+  userNo: String
+  userName: String
+}
+```
+```
+// 查询所有声明 
+type Query {
+   // 函数名字为user 返回为 User的数组
+  user: [User]
+}
+// Mutation 所有声明 
+type Mutation {
+   // 函数名字为user 返回为 User对象
+  user: User
+}
+```
+Mutation 和 Query 声明函数的实现处：
+```
+'use strict';
+
+module.exports = {
+  Query: {
+    async user(root, { }, ctx) {
+      return await ctx.model.User.find();
+    },
+  },
+  Mutation: {
+    async user(root, { }, ctx) {
+      return await ctx.model.User.create({userName: 'add user', userNo: 99});
+    },
+  }
+}
+```
+然后打开浏览器输入：[http://127.0.0.1:7001/graphql](http://127.0.0.1:7001/graphql)，没病，查询一个瞧瞧！！
+![graphql使用截图](https://upload-images.jianshu.io/upload_images/9942046-cb2c88a96914a28b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
+##### egg 定时任务
+
+定时任务和我们一般定时任务差不多。定时任务一般分两种：
++ 一种是 **间隔若干时间执行** 某个任务 
++ 另一种是 **某个时间点执行** 某个任务
+
+1. 间隔若干时间执行（每隔60s将会执行一次）
+```
+  static get schedule() {
+    return {
+      interval: '60s', // 60s 间隔
+      type: 'all', // 指定所有的 worker 都需要执行
+    };
+  }
+
+  async subscribe() {
+    const ctx = this.ctx;
+
+    console.log('每60s执行一次增加User的定时任务！！' + new Date())
+
+    const test = await ctx.service.user.addUserByScheduleTest();
+
+    console.log(test)
+  }
+```
+2. 某个时间点执行（每个月的15号:00:00 分执行）
+```
+  static get schedule() {
+    return {
+      cron: '0 0 0 15 * *', // 每个月的15号:00:00 分执行
+      type: 'worker', // 只指定一个随机进程执行job 防止出现数据冲突
+      disable: false, // 是否开启
+      cronOptions: {
+        tz: 'Asia/Shanghai',
+      },
+    };
+  }
+
+  async subscribe () {
+    const ctx = this.ctx;
+
+    console.log('每个月的15号:00:00 分执行！！' + new Date())
+  }
+```
+时间的配置请看：[egg的官方文档]([https://eggjs.org/zh-cn/basics/schedule.html](https://eggjs.org/zh-cn/basics/schedule.html)
+)。又挺晚啦，下节课给大家上graphql 的ts版本。
+
