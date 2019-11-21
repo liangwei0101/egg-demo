@@ -59,7 +59,7 @@ export interface IUserDocument extends IUser, Document {
   /**
   * 实例方法接口（名称需要和Schema的方法名一样）
   */
- userInstanceTestMethods: () => IUser;
+  userInstanceTestMethods: () => IUser;
 }
 
 /**
@@ -80,5 +80,5 @@ export default (app: Application) => {
 
   const mongoose = app.mongoose;
   // 这里为了挂载到ctx中，让正常ctx.model.User也能使用
-  mongoose.model<IUserDocument, IUserModel>('User', UserSchema);
+  return mongoose.model<IUserDocument, IUserModel>('User', UserSchema);
 };

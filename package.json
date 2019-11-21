@@ -23,6 +23,8 @@
   },
   "dependencies": {
     "egg": "^2.6.1",
+    "egg-cors": "^2.2.3",
+    "egg-graphql": "^2.7.0",
     "egg-mongoose": "^3.2.0",
     "egg-scripts": "^2.6.0"
   },

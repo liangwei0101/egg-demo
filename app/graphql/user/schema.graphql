@@ -1,0 +1,8 @@
+type User {
+
+  _id: String
+
+  userNo: String
+
+  userName: String
+}

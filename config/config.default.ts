@@ -8,7 +8,7 @@ export default (appInfo: EggAppInfo) => {
   config.keys = appInfo.name + '_1572947163069_8100';
 
   // add your egg config in here
-  config.middleware = [];
+  config.middleware = ['graphql'];
 
   config.security = {
     csrf: {
@@ -16,9 +16,24 @@ export default (appInfo: EggAppInfo) => {
     },
   };
 
+  config.cors = {
+    origin: '*',
+    allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH'
+  }
+
   config.mongoose = {
     url: process.env.EGG_MONGODB_URL || 'mongodb://127.0.0.1/egg-demo',
     options: {},
+  };
+
+  config.graphql = {
+    router: '/graphql',
+    // 是否加载到 app 上，默认开启
+    app: true,
+    // 是否加载到 agent 上，默认关闭
+    agent: false,
+    // 是否加载开发者工具 graphiql, 默认开启。路由同 router 字段。使用浏览器打开该可见。
+    graphiql: true,
   };
 
   // add your special config in here
