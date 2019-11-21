@@ -8,7 +8,7 @@ export default (app: Application) => {
   router.get('/users', controller.home.getUsers);
   router.put('/user', controller.home.updateUser);
   router.post('/user', controller.home.addUser);
-  router.del('/user', controller.home.deleteUser);
+  router.delete('/user', controller.home.deleteUser);
   router.get('/testStaticMethods',controller.home.testStaticMethods);
   router.get('/testInstanceFunction', controller.home.testInstanceFunction);
 };

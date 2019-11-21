@@ -21,8 +21,7 @@ export default class UserService extends Service {
     user.userNo = 99;
 
     const res = await UserModel.create(user);
-
-    return res
+    return res;
   }
 
   /**
