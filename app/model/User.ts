@@ -59,7 +59,7 @@ export interface IUserDocument extends IUser, Document {
   /**
   * 实例方法接口（名称需要和Schema的方法名一样）
   */
-  userInstanceTestMethods: () => IUser;
+ userInstanceTestMethods: () => IUser;
 }
 
 /**

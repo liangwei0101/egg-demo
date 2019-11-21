@@ -14,17 +14,13 @@ export default class UserService extends Service {
     return `hi, ${name}`;
   }
 
-  public async addUser() {
+  public async addUserByScheduleTest() {
 
-    // 模拟前端传递过来的数据（方便测试）
     const user = new UserModel();
     user.userName = 'add user';
     user.userNo = 99;
 
     const res = await UserModel.create(user);
-    console.log('=================')
-    console.log(res)
-    console.log('=================')
     return res;
   }
 
