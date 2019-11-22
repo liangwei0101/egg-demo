@@ -80,5 +80,5 @@ export default (app: Application) => {
 
   const mongoose = app.mongoose;
   // 这里为了挂载到ctx中，让正常ctx.model.User也能使用
-  mongoose.model<IUserDocument, IUserModel>('User', UserSchema);
+  return mongoose.model<IUserDocument, IUserModel>('User', UserSchema);
 };
