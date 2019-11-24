@@ -26,7 +26,8 @@
     "egg-cors": "^2.2.3",
     "egg-graphql": "^2.7.0",
     "egg-mongoose": "^3.2.0",
-    "egg-scripts": "^2.6.0"
+    "egg-scripts": "^2.6.0",
+    "egg-socket.io": "^4.1.6"
   },
   "devDependencies": {
     "@types/mocha": "^2.2.40",

@@ -16,6 +16,11 @@ const plugin: EggPlugin = {
   cors: {
     enable: true,
     package: 'egg-cors'
+  },
+  // socket.io
+  io: {
+    enable: true,
+    package: 'egg-socket.io',
   }
 };
 

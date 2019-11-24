@@ -16,10 +16,24 @@ export default (appInfo: EggAppInfo) => {
     },
   };
 
+  config.io = {
+    init: {},
+    namespace: {
+      '/': {
+        connectionMiddleware: [ 'connection' ],
+        packetMiddleware: [ 'packet' ],
+      },
+      '/chat': {
+        connectionMiddleware: [ 'connection' ],
+        packetMiddleware: [],
+      },
+    },
+  };
+
   config.cors = {
     origin: '*',
     allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH'
-  }
+  };
 
   config.mongoose = {
     url: process.env.EGG_MONGODB_URL || 'mongodb://127.0.0.1/egg-demo',

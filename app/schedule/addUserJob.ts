@@ -17,6 +17,8 @@ export default class AddUserJob extends Subscription {
 
     console.log('每60s执行一次增加User的定时任务！！' + new Date())
 
+    this.ctx.app.io.of('/').emit('test', '我是定时任务，60s一次的主推的消息啊!!!');
+
     const test = await ctx.service.user.addUserByScheduleTest();
 
     console.log(test)
