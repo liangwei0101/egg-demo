@@ -1,37 +1,11 @@
-// app.ts
-import { IBoot } from 'egg';
+import 'reflect-metadata'
 
-export default class FooBoot implements IBoot {
+import { Application } from 'egg'
 
-  configWillLoad() {
-    // Ready to call configDidLoad,
-    // Config, plugin files are referred,
-    // this is the last chance to modify the config.
-  }
-
-  configDidLoad() {
-    // Config, plugin files have loaded.
-  }
-
-  async didLoad() {
-    // All files have loaded, start plugin here.
-  }
-
-  async willReady() {
-    // All plugins have started, can do some thing before app ready.
-  }
-
-  async didReady() {
-    // Worker is ready, can do some things
-    // don't need to block the app boot.
-    console.log('====================')
-  }
-
-  async serverDidReady() {
-    // Server is listening.
-  }
-
-  async beforeClose() {
-    // Do some thing before app close.
-  }
+export default async (app: Application) => {
+  console.log('app-env', app.config.env)
+  console.log('===============')
+  console.log(app.graphql)
+  console.log('===============')
+  await app.graphql.init()
 }
