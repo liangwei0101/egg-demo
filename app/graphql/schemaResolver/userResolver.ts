@@ -8,9 +8,6 @@ export class UserResolver {
   @Query(() => User)
   async getUser() {
     const aa = await UserModel.findOne();
-    console.log('=====================')
-    console.log(aa)
-    console.log('=====================')
     return aa;
   }
 

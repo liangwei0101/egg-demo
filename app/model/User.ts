@@ -1,89 +1,47 @@
-import { Application } from 'egg';
-import { BaseModel } from './BaseModel';
-import { Document, Model, Schema, model } from 'mongoose';
+
+import BaseModel from './BaseModel';
+import { InstanceType } from 'typegoose'
 import { ObjectType, Field } from 'type-graphql';
-
-/**
-  * 定义一个User的Schema
-*/
-const UserSchema: Schema = new Schema({
-
-  userNo: {
-    type: Number,
-    index: true,
-  },
-
-  userName: String,
-},
-  {
-    timestamps: true,
-  },
-);
-
-// userNo 为索引
-UserSchema.index({ userNo: 1, });
-
-// UserSchema的实例方法
-UserSchema.methods.userInstanceTestMethods = function () {
-
-  const user: User = new UserModel();
-  user.userName = '我是实例化方法测试';
-  user.userNo = 9527;
-
-  return user;
-};
-
-// UserSchema的实例方法
-UserSchema.statics.userStaticTestMethods = function () {
-
-  const user: User = new UserModel();
-  user.userName = '我是静态方法测试';
-  user.userNo = 9528;
-
-  return user;
-};
+import { index, prop, ModelType, instanceMethod } from 'typegoose'
 
 /**
   * 用户字段接口
 */
 @ObjectType()
+@index({ userNo: 1 })
 export class User extends BaseModel {
 
+  @prop({ required: true })
   @Field()
   userNo: number;
 
+  @prop({ required: true })
   @Field()
   userName: string;
+
+
+  //#region（实例方法 和 实例方法）
+  @instanceMethod
+  public async userInstanceTestMethods(this: InstanceType<User>) {
+
+    const user: User = new User();
+    user.userName = '我是实例化方法测试';
+    user.userNo = 9527;
+
+    return user;
+  }
+
+  @instanceMethod
+  public async userStaticTestMethods(this: ModelType<User> & typeof User) {
+
+    const user: User = new User();
+    user.userName = '我是静态方法测试';
+    user.userNo = 9527;
+
+    return user;
+  }
+
+  //#endregion
 }
 
-/**
-  * 用户Document（实例方法在这写）
-*/
-export interface IUserDocument extends User, Document {
-
-  /**
-  * 实例方法接口（名称需要和Schema的方法名一样）
-  */
-  userInstanceTestMethods: () => User;
-}
-
-/**
-  * 静态方法接口
-*/
-export interface IUserModel extends Model<IUserDocument> {
-
-  /**
-   * 静态方法
-   */
-  userStaticTestMethods: () => User;
-}
-
-export const UserModel = model<IUserDocument, IUserModel>('User', UserSchema);
-
-// egg-mongoose注入
-export default (app: Application) => {
-
-  const mongoose = app.mongoose;
-  // 这里为了挂载到ctx中，让正常ctx.model.User也能使用
-  return mongoose.model<IUserDocument, IUserModel>('User', UserSchema);
-};
+export const UserModel = new User().getModelForClass(User)

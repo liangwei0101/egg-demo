@@ -1,15 +1,31 @@
-import { Field, ObjectType } from 'type-graphql'
+import { Field, ObjectType } from 'type-graphql';
+import { Typegoose, prop, pre } from 'typegoose';
 
 /**
   * BaseModel
-  * 因为mongose的Document中不能有_id, 所以只能拿出来再继承一遍
 */
-@ObjectType({ description: "创建时间 和 更新时间" })
-export class BaseModel {
 
+@pre<BaseModel>('save', function(next) {
+  if (!this.createdAt || this.isNew) {
+    this.createdAt = this.updatedAt = new Date()
+  } else {
+    this.updatedAt = new Date()
+  }
+  next()
+})
+
+@ObjectType()
+export default class BaseModel extends Typegoose {
+
+  @Field()
+  _id?: string
+
+  @prop()
   @Field()
   createdAt: Date
 
+  @prop()
   @Field()
   updatedAt: Date
 }
+

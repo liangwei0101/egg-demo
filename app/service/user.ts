@@ -29,7 +29,7 @@ export default class UserService extends Service {
   */
   public async testUserInstanceServiceMethods(): Promise<User> {
     const newUser = new UserModel();
-    return newUser.userInstanceTestMethods();
+    return await newUser.userInstanceTestMethods();
   }
 
   /**
