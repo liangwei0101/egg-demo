@@ -1,8 +1,8 @@
 
 import BaseModel from './BaseModel';
-import { InstanceType } from 'typegoose'
+import { InstanceType, ModelType } from 'typegoose'
 import { ObjectType, Field } from 'type-graphql';
-import { index, prop, ModelType, instanceMethod } from 'typegoose'
+import { index, prop, instanceMethod, staticMethod } from 'typegoose'
 
 /**
   * 用户字段接口
@@ -31,8 +31,8 @@ export class User extends BaseModel {
     return user;
   }
 
-  @instanceMethod
-  public async userStaticTestMethods(this: ModelType<User> & typeof User) {
+  @staticMethod
+  public static async userStaticTestMethods(this: ModelType<User> & typeof User) {
 
     const user: User = new User();
     user.userName = '我是静态方法测试';

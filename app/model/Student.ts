@@ -2,7 +2,7 @@
 import BaseModel from './BaseModel';
 import { InstanceType } from 'typegoose'
 import { ObjectType, Field } from 'type-graphql';
-import { index, prop, ModelType, instanceMethod } from 'typegoose'
+import { index, prop, ModelType, instanceMethod, staticMethod } from 'typegoose'
 
 /**
   * 学生类
@@ -30,7 +30,7 @@ export class Student extends BaseModel {
     return user;
   }
 
-  @instanceMethod
+  @staticMethod
   public async userStaticTestMethods(this: ModelType<Student> & typeof Student) {
 
     const user: Student = new Student();
