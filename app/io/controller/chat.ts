@@ -1,6 +1,6 @@
 import { Application } from 'egg';
 
-module.exports = (app: Application) => {
+export default async (app: Application) => {
   class Controller extends app.Controller {
     async sendMsg() {
       const nsp = app.io.of('/');

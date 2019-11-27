@@ -7,11 +7,6 @@ const plugin: EggPlugin = {
     enable: true,
     package: 'egg-mongoose',
   },
-  // graphql
-  graphql: {
-    enable: true,
-    package: 'egg-graphql',
-  },
   // cors
   cors: {
     enable: true,

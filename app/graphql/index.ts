@@ -23,11 +23,7 @@ export default class GraphQL {
 
   getResolvers() {
     const isLocal = this.app.config.env === 'local'
-    const aa = [path.resolve(this.app.baseDir, `app/graphql/schema/**/*.${isLocal ? "ts" : "js"}`)];
-    console.log('===============')
-    console.log(aa)
-    console.log('===============')
-    return aa;
+    return [path.resolve(this.app.baseDir, `app/graphql/schemaResolver/*.${isLocal ? "ts" : "js"}`)];
   }
 
   async init() {
