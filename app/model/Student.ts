@@ -1,6 +1,7 @@
 import { Application } from 'egg';
-// import { IBaseSchema } from './IBaseSchema';
+import { BaseModel } from './BaseModel';
 import { Document, Model, Schema, model } from 'mongoose';
+import { ObjectType, Field } from 'type-graphql';
 
 /**
   * 定义一个Student的Schema
@@ -25,7 +26,7 @@ StudentSchema.index({ userNo: 1, });
 // StudentSchema的实例方法
 StudentSchema.methods.userInstanceTestMethods = function () {
 
-  const user: IStudent = new StudentModel();
+  const user: Student = new StudentModel();
   user.userName = '我是实例化方法测试';
   user.userNo = 9527;
 
@@ -35,7 +36,7 @@ StudentSchema.methods.userInstanceTestMethods = function () {
 // StudentSchema的实例方法
 StudentSchema.statics.userStaticTestMethods = function () {
 
-  const user: IStudent = new StudentModel();
+  const user: Student = new StudentModel();
   user.userName = '我是静态方法测试';
   user.userNo = 9528;
 
@@ -45,17 +46,20 @@ StudentSchema.statics.userStaticTestMethods = function () {
 /**
   * 用户字段接口
 */
-export interface IStudent {
+@ObjectType()
+export class Student extends BaseModel {
 
+  @Field()
   userNo: number;
 
+  @Field()
   userName: string;
 }
 
 /**
   * 用户Document（实例方法在这写）
 */
-export interface IStudentDocument extends IStudent, Document {
+export interface IStudentDocument extends Student, Document {
 
   /**
   * 实例方法接口（名称需要和Schema的方法名一样）

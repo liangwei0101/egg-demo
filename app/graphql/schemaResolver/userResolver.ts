@@ -1,16 +1,20 @@
-import { UserSchema } from '../schema/user';
+import { User } from '../../model/User';
 import { Resolver, Query, Mutation } from 'type-graphql';
 import { UserModel } from '../../model/User';
 
-@Resolver(UserSchema)
+@Resolver(User)
 export class UserResolver {
 
-  @Query(() => UserSchema)
+  @Query(() => User)
   async getUser() {
-    return UserModel.findOne();
+    const aa = await UserModel.findOne();
+    console.log('=====================')
+    console.log(aa)
+    console.log('=====================')
+    return aa;
   }
 
-  @Mutation(() => UserSchema)
+  @Mutation(() => User)
   async addUser() {
 
     let user = new UserModel();

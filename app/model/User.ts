@@ -1,5 +1,7 @@
 import { Application } from 'egg';
+import { BaseModel } from './BaseModel';
 import { Document, Model, Schema, model } from 'mongoose';
+import { ObjectType, Field } from 'type-graphql';
 
 /**
   * 定义一个User的Schema
@@ -24,7 +26,7 @@ UserSchema.index({ userNo: 1, });
 // UserSchema的实例方法
 UserSchema.methods.userInstanceTestMethods = function () {
 
-  const user: IUser = new UserModel();
+  const user: User = new UserModel();
   user.userName = '我是实例化方法测试';
   user.userNo = 9527;
 
@@ -34,7 +36,7 @@ UserSchema.methods.userInstanceTestMethods = function () {
 // UserSchema的实例方法
 UserSchema.statics.userStaticTestMethods = function () {
 
-  const user: IUser = new UserModel();
+  const user: User = new UserModel();
   user.userName = '我是静态方法测试';
   user.userNo = 9528;
 
@@ -44,22 +46,25 @@ UserSchema.statics.userStaticTestMethods = function () {
 /**
   * 用户字段接口
 */
-export interface IUser {
+@ObjectType()
+export class User extends BaseModel {
 
+  @Field()
   userNo: number;
 
+  @Field()
   userName: string;
 }
 
 /**
   * 用户Document（实例方法在这写）
 */
-export interface IUserDocument extends IUser, Document {
+export interface IUserDocument extends User, Document {
 
   /**
   * 实例方法接口（名称需要和Schema的方法名一样）
   */
- userInstanceTestMethods: () => IUser;
+  userInstanceTestMethods: () => User;
 }
 
 /**
@@ -70,7 +75,7 @@ export interface IUserModel extends Model<IUserDocument> {
   /**
    * 静态方法
    */
-  userStaticTestMethods: () => IUser;
+  userStaticTestMethods: () => User;
 }
 
 export const UserModel = model<IUserDocument, IUserModel>('User', UserSchema);

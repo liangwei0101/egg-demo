@@ -61,17 +61,17 @@ export default class HomeController extends Controller {
   }
 
   public async testInstanceFunction() {
-    const { ctx, service } = this.ctx;
+    const ctx = this.ctx;
 
-    const user = await service.user.testUserInstanceServiceMethods();
+    const user = await ctx.service.user.testUserInstanceServiceMethods();
 
     ctx.body = user;
   }
 
   public async testStaticMethods() {
-    const { ctx, service } = this.ctx;
+    const ctx = this.ctx;
 
-    const user = await service.user.testUserStaticServiceMethods();
+    const user = await ctx.service.user.testUserStaticServiceMethods();
 
     ctx.body = user;
   }

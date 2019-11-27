@@ -1,6 +1,6 @@
 import * as assert from 'assert';
 import { app } from 'egg-mock/bootstrap';
-import { IUser } from '../../../app/mongooseSchema/UserSchema';
+import { IUser } from '../../../app/model/User';
 
 describe('test/app/controller/home.test.ts', () => {
 

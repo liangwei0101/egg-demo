@@ -1,5 +1,5 @@
 import { Service } from 'egg';
-import { UserModel, IUser } from '../model/User';
+import { UserModel, User } from '../model/User';
 
 /**
  * 用户 Service 层
@@ -27,7 +27,7 @@ export default class UserService extends Service {
   /**
   * 测试用户的实例方法
   */
-  public async testUserInstanceServiceMethods(): Promise<IUser> {
+  public async testUserInstanceServiceMethods(): Promise<User> {
     const newUser = new UserModel();
     return newUser.userInstanceTestMethods();
   }
@@ -35,7 +35,7 @@ export default class UserService extends Service {
   /**
   * 测试用户的实例方法
   */
-  public async testUserStaticServiceMethods(): Promise<IUser> {
+  public async testUserStaticServiceMethods(): Promise<User> {
     return UserModel.userStaticTestMethods();
   }
 
