@@ -1,17 +1,16 @@
 import { User } from '../../model/User';
-import { Resolver, Query, Mutation } from 'type-graphql';
 import { UserModel } from '../../model/User';
+import { Resolver, Query, Mutation } from 'type-graphql';
 
 @Resolver(User)
 export class UserResolver {
 
-  @Query(() => User)
+  @Query(() => [User], { description: '查询用户列表' })
   async getUser() {
-    const aa = await UserModel.findOne();
-    return aa;
+    return await UserModel.find();
   }
 
-  @Mutation(() => User)
+  @Mutation(() => User, { description: '增加用户' })
   async addUser() {
 
     let user = new UserModel();

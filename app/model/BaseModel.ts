@@ -17,15 +17,15 @@ import { Typegoose, prop, pre } from 'typegoose';
 @ObjectType()
 export default class BaseModel extends Typegoose {
 
-  @Field()
+  @Field({ description: "id" })
   _id?: string
 
   @prop()
-  @Field()
+  @Field({ description: "创建时间" })
   createdAt: Date
 
   @prop()
-  @Field()
+  @Field({ description: "更新时间" })
   updatedAt: Date
 }
 

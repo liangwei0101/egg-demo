@@ -5,12 +5,12 @@ import { StudentModel } from '../../model/Student';
 @Resolver(Student)
 export class StudentResolver {
 
-  @Query(() => Student)
+  @Query(() => [Student], { description: '查询用户列表' })
   async getStudent() {
     return await StudentModel.findOne();
   }
 
-  @Mutation(() => Student)
+  @Mutation(() => Student, { description: '增加用户' })
   async addStudent() {
     let strudent = new StudentModel();
     strudent.userNo = 666;

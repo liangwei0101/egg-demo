@@ -1,7 +1,7 @@
 
 import BaseModel from './BaseModel';
 import { InstanceType } from 'typegoose'
-import { ObjectType, Field } from 'type-graphql';
+import { ObjectType, Field, Int } from 'type-graphql';
 import { index, prop, ModelType, instanceMethod, staticMethod } from 'typegoose'
 
 /**
@@ -12,11 +12,11 @@ import { index, prop, ModelType, instanceMethod, staticMethod } from 'typegoose'
 export class Student extends BaseModel {
 
   @prop({ required: true })
-  @Field()
+  @Field(() => Int, { description: "编号" })
   userNo: number;
 
   @prop({ required: true })
-  @Field()
+  @Field({ nullable: true, description: "名称" })
   userName: string;
 
   //#region（实例方法 和 实例方法）
