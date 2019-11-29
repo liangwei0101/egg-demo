@@ -436,3 +436,227 @@ module.exports = {
 时间的配置请看：[egg的官方文档]([https://eggjs.org/zh-cn/basics/schedule.html](https://eggjs.org/zh-cn/basics/schedule.html)
 )。又挺晚啦，下节课给大家上graphql 的ts版本。
 
+# Node 使用 Egg 框架 之 上TS 的教程（三）
+
+##### Node + Egg + TS + typegoose + Resetful + schedule + type-graphql+ websocket
+
+梁老师课堂，不间断，最终版教程来啦。
+
+本次教材地址：[https://github.com/liangwei0101/egg-demo/tree/egg-ts-mongoose-graphql.ts-websocket](https://github.com/liangwei0101/egg-demo/tree/egg-ts-mongoose-graphql.ts-websocket)
+
+## 本次教材讲解：typegoose  和 type-graphql 以及 websocket
+
+网上找了一圈，都没有 egg + typegoose +  type-graphql 的教程，还是我来吧。
+mongoose 和  graphql 一起使用，会有啥问题呢？当然，正常的问题是不存在，**但是很多废代码**。拿上节课的代码来说。
+```
+// schema.graphql（user schema的字段声明）
+type User {
+  userNo: Number
+  userName: String
+}
+```
+
+```
+const UserSchema: Schema = new Schema({
+  userNo: {
+    type: Number,
+    index: true,
+  },
+  userName: String,
+}),
+```
+在schema.graphql我们要声明如上的字段。我们可以发现，其实我们的字段都是一样的，却多写了一遍。当我们的model很多的时候，就会产生大量的这个问题。引出我们的主角：typegoose 和 type-graphql 。
+
+## 使用 typegoose 和  type-graphql 
+
+1. typegoose 主要作用：就是将 *加了注解的类* 转化成 对应的 mongoose的属性、实例方法、静态方法等等。
+
+2. type-graphql 的主要作用：也是讲 将 *加了注解的类* 转化成对应的 graphql 的声明字段、query、Mutation等。
+
+看到这里我们应该可以理解到为啥代码比之前的写法少了重复的代码。
+```
+egg-demo
+├── app
+│   ├── controller (前端的请求会到这里来！)
+│   │   └── home.ts
+│   ├── model（数据库表结构抽象出来的模型）
+│   │   └── User.ts
+│   ├── graphql（graphql文件夹）
+│   │   └── schemaResolver（所有Resolver）
+│   │       └── userResolver.ts（user的Resolver文件）
+│   ├── ├──index.ts （type-graphql的初始化）
+│   ├── service（controller 层不建议承载过多的业务，业务重时放在service层）
+│   │   └── user.ts
+│   ├── io（websocket文件夹）
+│   │   └── controller（前端通过websocket通信的请求）
+│   │       └── chat.ts（controller相应的处理）
+│   ├── schedule（定时任务文件夹）
+│   │   └── addUserJob.ts
+│   └── router.ts （Url的相关映射）
+├── config （框架的配置文件）
+│   ├── config.default.ts
+│   ├── config.local.ts
+│   ├── config.prod.ts
+│   └── plugin.ts
+├── test （测试文件夹）
+│   └── **/*.test.ts
+├── typings （目录用于放置 d.ts 文件）
+│   └── **/*.d.ts
+├── README.md
+├── package.json
+├── tsconfig.json
+└── tslint.json
+```
+本次教程改动了model文件夹和graphql文件夹，以及增加了IO文件夹。
+
+## Model
+
+```
+@ObjectType()
+export default class BaseModel extends Typegoose {
+
+  @Field({ description: "id" })
+  _id?: string
+
+  @prop()
+  @Field({ description: "创建时间" })
+  createdAt: Date
+
+  @prop()
+  @Field({ description: "更新时间" })
+  updatedAt: Date
+}
+```
+
+```
+/**
+  * 用户类
+*/
+@ObjectType()
+@index({ userNo: 1 })
+export class User extends BaseModel {
+  @prop({ required: true })
+  @Field(() => Int, { description: "编号" })
+  userNo: number;
+
+  @prop({ required: true })
+  @Field({ nullable: true, description: "名称" })
+  userName?: string;
+
+  //#region（实例方法 和 实例方法）
+  @instanceMethod
+  public async userInstanceTestMethods(this: InstanceType<User>) {
+    const user: User = new User();
+    user.userName = '我是实例化方法测试';
+    user.userNo = 9527;
+    return user;
+  }
+
+  @staticMethod
+  public static async userStaticTestMethods(this: ModelType<User> & typeof User) {
+    const user: User = new User();
+    user.userName = '我是静态方法测试';
+    user.userNo = 9527;
+    return user;
+  }
+  //#endregion
+}
+export const UserModel = new User().getModelForClass(User)
+```
+
++  @prop({ required: true })  这个注解是：这个是要转化成 mongoose 字段的，并且是必须填写。
++  @Field({ nullable: true, description: "名称" })这个注解是：这个字段将会转成 graphql的 schema，可选，描述是名称。
++ @instanceMethod 是 mongoose model 的实例方法。
++ @staticMethod 是 mongoose model 的静态方法。
++ 通过导出的 UserModel ，我们将能操作mongoose 的find，create、实例方法，静态方法，hook等。
++ 通过 model 继承BaseModel，我们每一个model将能少写三个正常js的graphql 的字段。 
+
+## graphql 对应schema 的  Resolver
+```
+@Resolver(User)
+export class UserResolver {
+
+  @Query(() => [User], { description: '查询用户列表' })
+  async getUser() {
+    return await UserModel.find();
+  }
+
+  @Mutation(() => User, { description: '增加用户' })
+  async addUser() {
+
+    let user = new UserModel();
+    user.userNo = 666;
+    user.userName = 'liang';
+
+    return await UserModel.create(user);
+  }
+}
+```
++ @Resolver(User) ：意思为这个User model 对应的 Resolver。
++  @Query(() => [User], { description: '查询用户列表' }) ：意思为：这个是函数是Query，返回的是一个数组，描述是XXX。
++ @Mutation(() => User, { description: '增加用户' })： 同理。  
+
+写到这里，我们已经可以运行啦。我们输入：http://127.0.0.1:7001/graphql 将能看到新的界面。我们的 Query 和 Mutation 还有相应的注解都在其中。
+![graphql 界面](https://user-gold-cdn.xitu.io/2019/11/28/16eb25742212325b?w=1240&h=592&f=png&s=105135)
+
+其实到这里，我这里不建议项目中原来用js的上这种方式。如果是存在许多js和ts共存的，我个人建议采用[教程二](https://www.jianshu.com/p/859006440e75)里面的方式去重构。
+
+## websocket 教程
+这个简单很多，我们只要：
+
+```
+  // config.default.ts 配置一下
+  config.io = {
+    init: {},
+    namespace: {
+      '/': {
+        connectionMiddleware: ['connection'],
+        packetMiddleware: ['packet'],
+      },
+      '/chat': {
+        connectionMiddleware: ['connection'],
+        packetMiddleware: [],
+      },
+    },
+  };
+  // plugin.ts 开启
+  io: {
+    enable: true,
+    package: 'egg-socket.io',
+  }
+```
+加到路由中：访问 /的websocket将会到这个sendMsg函数处理。
+```
+  io.of('/').route('chat', io.controller.chat.sendMsg);
+```
+到了这里，ts版本会报错，因为controller中定义的chat他不认识。这里需要我们手写一下index.d.ts就好了。 
+
+```
+declare module 'egg' {
+  interface CustomController {
+    chat: any;
+  }
+
+  interface EggSocketNameSpace {
+    emit: any
+  }
+}
+```
+前端我这里用的vue框架，vue中的使用简单些。就是下载包，然后在main.js中使用一波就好了。在相应的页面去做这个事情就好了。
+ ```
+// main.js
+import VueSocketIO from 'vue-socket.io'
+
+Vue.use(new VueSocketIO({
+  debug: true,
+  connection: 'http://127.0.0.1:7001',
+}))
+
+ ```
+```
+//接收服务端的信息
+this.sockets.subscribe("test", data => {
+   alert(data)
+ });
+```
+好啦，egg 上ts的教程，完美结束。愿大家写起来都开心啊。不用在写没有提示的点点点了。。。若是有帮助，给github里的项目start一下啊，我也是琢磨了很久的呢。看到网上又没有这方面教程，写这些个更希望希望能帮到大家。谢谢~~
