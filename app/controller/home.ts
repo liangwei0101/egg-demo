@@ -4,13 +4,13 @@ import { UserModel } from '../model/User';
 export default class HomeController extends Controller {
 
   public async index() {
-    const { ctx } = this;
+    const ctx = this.ctx;
 
     ctx.body = await ctx.service.user.sayHi('egg');
   }
 
   public async getUser() {
-    const { ctx } = this;
+    const ctx = this.ctx;
 
     const users = await UserModel.findOne();
 
@@ -18,7 +18,7 @@ export default class HomeController extends Controller {
   }
 
   public async getUsers() {
-    const { ctx } = this;
+    const ctx = this.ctx;
 
     const users = await UserModel.find();
 
@@ -26,7 +26,7 @@ export default class HomeController extends Controller {
   }
 
   public async addUser() {
-    const { ctx } = this;
+    const ctx = this.ctx;
 
     // 模拟前端传递过来的数据（方便测试）
     const user = new UserModel();
@@ -39,7 +39,7 @@ export default class HomeController extends Controller {
   }
 
   public async updateUser() {
-    const { ctx } = this;
+    const ctx = this.ctx;
 
     const user = new UserModel();
     user.userNo = 99;
@@ -50,7 +50,7 @@ export default class HomeController extends Controller {
   }
 
   public async deleteUser() {
-    const { ctx } = this;
+    const ctx = this.ctx;
 
     const user = new UserModel();
     user.userNo = 99;
@@ -61,7 +61,7 @@ export default class HomeController extends Controller {
   }
 
   public async testInstanceFunction() {
-    const { ctx } = this;
+    const ctx = this.ctx;
 
     const user = await ctx.service.user.testUserInstanceServiceMethods();
 
@@ -69,7 +69,7 @@ export default class HomeController extends Controller {
   }
 
   public async testStaticMethods() {
-    const { ctx } = this;
+    const ctx = this.ctx;
 
     const user = await ctx.service.user.testUserStaticServiceMethods();
 

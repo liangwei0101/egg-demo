@@ -1,15 +1,15 @@
 
 import BaseModel from './BaseModel';
-import { InstanceType, ModelType } from 'typegoose'
+import { InstanceType } from 'typegoose'
 import { ObjectType, Field, Int } from 'type-graphql';
-import { index, prop, instanceMethod, staticMethod } from 'typegoose'
+import { index, prop, ModelType, instanceMethod, staticMethod } from 'typegoose'
 
 /**
-  * 用户字段接口
+  * 学生类
 */
 @ObjectType()
 @index({ userNo: 1 })
-export class User extends BaseModel {
+export class Student extends BaseModel {
 
   @prop({ required: true })
   @Field(() => Int, { description: "编号" })
@@ -17,14 +17,13 @@ export class User extends BaseModel {
 
   @prop({ required: true })
   @Field({ nullable: true, description: "名称" })
-  userName?: string;
-
+  userName: string;
 
   //#region（实例方法 和 实例方法）
   @instanceMethod
-  public async userInstanceTestMethods(this: InstanceType<User>) {
+  public async userInstanceTestMethods(this: InstanceType<Student>) {
 
-    const user: User = new User();
+    const user: Student = new Student();
     user.userName = '我是实例化方法测试';
     user.userNo = 9527;
 
@@ -32,9 +31,9 @@ export class User extends BaseModel {
   }
 
   @staticMethod
-  public static async userStaticTestMethods(this: ModelType<User> & typeof User) {
+  public async userStaticTestMethods(this: ModelType<Student> & typeof Student) {
 
-    const user: User = new User();
+    const user: Student = new Student();
     user.userName = '我是静态方法测试';
     user.userNo = 9527;
 
@@ -43,3 +42,5 @@ export class User extends BaseModel {
 
   //#endregion
 }
+
+export const StudentModel = new Student().getModelForClass(Student);

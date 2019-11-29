@@ -16,9 +16,35 @@ export default (appInfo: EggAppInfo) => {
     },
   };
 
+  config.io = {
+    init: {},
+    namespace: {
+      '/': {
+        connectionMiddleware: ['connection'],
+        packetMiddleware: ['packet'],
+      },
+      '/chat': {
+        connectionMiddleware: ['connection'],
+        packetMiddleware: [],
+      },
+    },
+  };
+
+  config.cors = {
+    origin: '*',
+    allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH',
+    credentials: true
+  };
+
   config.mongoose = {
     url: process.env.EGG_MONGODB_URL || 'mongodb://127.0.0.1/egg-demo',
     options: {},
+  };
+
+  config.graphql = {
+    router: '/graphql',
+    // 是否加载到 app 上，默认开启
+    dateScalarMode: 'timestamp'
   };
 
   // add your special config in here

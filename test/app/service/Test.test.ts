@@ -14,13 +14,17 @@ describe('test/app/service/Test.test.js', () => {
     assert(result === 'hi, egg');
   });
 
+  it('addUserByScheduleTest', async () => {
+    const result = await ctx.service.user.addUserByScheduleTest();
+    assert(result.userNo === 99);
+  });
 
   it('testUserInstanceServiceMethods', async () => {
     const user = await ctx.service.user.testUserInstanceServiceMethods();
     assert(user.userName == '我是实例化方法测试');
   });
 
-  it('testUserInstanceServiceMethods', async () => {
+  it('testUserStaticServiceMethods', async () => {
     const user = await ctx.service.user.testUserStaticServiceMethods();
     assert(user.userName == '我是静态方法测试');
   });
