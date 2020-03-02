@@ -43,3 +43,5 @@ export class User extends BaseModel {
 
   //#endregion
 }
+
+export const UserModel = new User().getModelForClass(User);
