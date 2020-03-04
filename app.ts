@@ -35,6 +35,7 @@ export default class FooBoot implements IBoot {
 
   async willReady() {
     // All plugins have started, can do some thing before app ready.
+    // await this.customLoadModel();
   }
 
   async didReady() {
@@ -88,16 +89,21 @@ export default class FooBoot implements IBoot {
 
     const files = find(modelDir, { matching })
     app.model = {}
+    const modelWhitelist: String[] = app.config.modelWhitelist;
 
     try {
       for (const file of files) {
         const modelPath = join(baseDir, file)
         const Model = require(modelPath).default
         const name = this.getModelName(file)
-        if (name === 'BaseModel') {
-          continue;
+        if (modelWhitelist.indexOf(name) === -1) {
+          try {
+            app.model[name] = new Model().getModelForClass(Model)
+          }
+          catch (e) {
+            console.log('如果要挂载到model请将export default');
+          }
         }
-        app.model[name] = new Model().getModelForClass(Model)
       }
     } catch (e) {
       console.log(e)

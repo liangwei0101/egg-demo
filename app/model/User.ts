@@ -1,8 +1,8 @@
 
 import BaseModel from './BaseModel';
-import { InstanceType, ModelType } from 'typegoose'
+import { InstanceType, ModelType } from 'typegoose';
 import { ObjectType, Field, Int } from 'type-graphql';
-import { index, prop, instanceMethod, staticMethod } from 'typegoose'
+import { index, prop, instanceMethod, staticMethod } from 'typegoose';
 
 /**
   * 用户字段接口

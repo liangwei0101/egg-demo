@@ -10,6 +10,8 @@ export default (appInfo: EggAppInfo) => {
   // add your egg config in here
   config.middleware = [];
 
+  config.modelWhitelist = ['BaseModel', 'Fee'];
+
   config.security = {
     csrf: {
       enable: false,
