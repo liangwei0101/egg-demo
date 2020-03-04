@@ -9,7 +9,7 @@ import { index, prop, ModelType, instanceMethod, staticMethod } from 'typegoose'
 */
 @ObjectType()
 @index({ userNo: 1 })
-export class Student extends BaseModel {
+export default class Student extends BaseModel {
 
   @prop({ required: true })
   @Field(() => Int, { description: "编号" })

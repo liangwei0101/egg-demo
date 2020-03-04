@@ -1,6 +1,6 @@
 import * as assert from 'assert';
 import { app } from 'egg-mock/bootstrap';
-import { User } from '../../../app/model/User';
+import User from '../../../app/model/User';
 
 describe('test/app/controller/home.test.ts', () => {
 
@@ -18,7 +18,7 @@ describe('test/app/controller/home.test.ts', () => {
   it('getUser', async () => {
     const result = await app.httpRequest().get('/user').expect(200);
     const user: User = result.body;
-    assert(user === null || user.userNo > 90);
+    assert(user !== null);
   });
 
   it('getUsers', async () => {

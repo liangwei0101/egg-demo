@@ -1,4 +1,4 @@
-import { User } from '../../model/User';
+import User from '../../model/User';
 import { UserModel } from '../../model/User';
 import { Resolver, Query, Mutation } from 'type-graphql';
 

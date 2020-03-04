@@ -1,4 +1,4 @@
-import { Student } from '../../model/Student';
+import Student from '../../model/Student';
 import { Resolver, Query, Mutation } from 'type-graphql';
 import { StudentModel } from '../../model/Student';
 

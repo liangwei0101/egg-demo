@@ -1,5 +1,6 @@
 import { Service } from 'egg';
-import { UserModel, User } from '../model/User';
+import User  from '../model/User';
+import { UserModel }  from '../model/User';
 
 /**
  * 用户 Service 层
