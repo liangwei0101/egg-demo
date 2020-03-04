@@ -1,5 +1,5 @@
 import { Service } from 'egg';
-import User  from '../model/User';
+import User from '../model/User';
 import { UserModel }  from '../model/User';
 
 /**
