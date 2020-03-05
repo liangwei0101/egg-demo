@@ -1,13 +1,15 @@
+import { Context } from 'egg'
 import User from '../../model/User';
 import { UserModel } from '../../model/User';
-import { Resolver, Query, Mutation } from 'type-graphql';
+import { DefaultQuery } from '../customBaseType';
+import { Resolver, Query, Mutation, Args, Ctx } from 'type-graphql';
 
 @Resolver(User)
 export class UserResolver {
 
   @Query(() => [User], { description: '查询用户列表' })
-  async getUser() {
-    return await UserModel.find();
+  async getUser(@Args() { filter, order, page }: DefaultQuery, @Ctx() ctx: Context) {
+    return await ctx.service.user.filterUser(filter, order, page);
   }
 
   @Mutation(() => User, { description: '增加用户' })

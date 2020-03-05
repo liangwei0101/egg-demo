@@ -1,6 +1,6 @@
 import { Service } from 'egg';
 import User from '../model/User';
-import { UserModel }  from '../model/User';
+import { UserModel } from '../model/User';
 
 /**
  * 用户 Service 层
@@ -39,6 +39,17 @@ export default class UserService extends Service {
   */
   public async testUserStaticServiceMethods(): Promise<User> {
     return await UserModel.userStaticTestMethods();
+  }
+
+  public async filterUser(filter: any, order: any, page: any) {
+    order = Object.assign({ createdAt: -1 }, order);
+    page = Object.assign({ num: 1, size: 10 }, page);
+    filter = Object.assign({}, filter);
+
+    return await UserModel.find(filter)
+      .sort(order)
+      .skip((page.num - 1) * page.size)
+      .limit(page.size);
   }
 
 }
