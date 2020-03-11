@@ -660,3 +660,191 @@ this.sockets.subscribe("test", data => {
  });
 ```
 好啦，egg 上ts的教程，完美结束。愿大家写起来都开心啊。不用在写没有提示的点点点了。。。若是有帮助，给github里的项目start一下啊，我也是琢磨了很久的呢。看到网上又没有这方面教程，写这些个更希望希望能帮到大家。谢谢~~
+##### Node + Egg + TS + typegoose + Resetful + schedule + type-graphql+ websocket
+
+# Node 使用 Egg 框架 之 上TS 的教程（四）
+
+在使用了之前教程的骨架代码一段时候，有同学说，typegoose出新包，大改了。现在写法变化了很多。于是就有了这个 typegoose新包的骨架代码教程。
+
+本次教材地址：[https://github.com/liangwei0101/egg-demo.git](https://github.com/liangwei0101/egg-demo.git)
+
+版本：
++ node：v12.14.0
++ @typegoose/typegoose: 6.4.0
+
+#### 先对比下前后typegoose之前的写法
+
+1.  引入的包不一样了
+```
+// 之前是这样写的
+import { index, prop, instanceMethod, staticMethod } from 'typegoose';
+
+// 现在是这样写的
+import { index, getModelForClass, prop } from '@typegoose/typegoose';
+```
+2. 实例方法和之前不一样了（简洁了许多）
+```
+// 之前实例方法是加注解就好了
+export default class User extends Typegoose {
+  @instanceMethod
+  public async userInstanceTestMethods(this: InstanceType<User>) {
+
+  }
+}
+
+// 现在直接写就好了不用注解
+export default class User extends Typegoose {
+  public async userInstanceTestMethods() {
+
+  }
+}
+```
+3. 静态方法和之前不一样了（简洁了许多）
+```
+// 之前静态方法是加注解就好了
+export default class User extends Typegoose {
+  @staticMethod
+  public async userStaticTestMethods(this: InstanceType<User>) {
+
+  }
+}
+
+// 现在直接写就好了不用注解
+export default class User extends Typegoose {
+  public static async userStaticTestMethods() {
+
+  }
+}
+```
+4. 导出Model, 现在getModelForClass直接使用即可
+```
+// 之前是这样写的
+export const UserModel = new User().getModelForClass(User);
+
+// 现在是这样写的
+export const UserModel = getModelForClass(User);
+```
+5. buildSchema 函数 （单元测试的ctx.model可能会需要）
+```
+// 从class 获取 Schema
+const TradeSchema = buildSchema(User);
+// 如果需要Schema的话
+export default (app: Application) => {
+  const mongoose = app.mongoose;
+  const UserSchema = buildSchema(Order);
+  UserSchema.loadClass(OrderClass);
+  return mongoose.model('Order', UserSchema);
+}
+```
+#### type-graphql 使用JSON类型
+找了很久type-graphql使用any或者json的文档或者例子，都是只支持type-graphql的基础类型，和class类型。然后，就自己定义一个JSON类型吧。
++ GraphQLScalarType 自定义（我封装了两个，一个查询用的，一个新增用的）
+```
+import { GraphQLScalarType } from "graphql";
+// 自定义 名称为JSON的类型
+export const JosnScalar = new GraphQLScalarType({
+  name: "JSON",
+  description: "验证 JSON 类型",
+  parseValue(value: any) {
+    if (Object.prototype.toString.call(value) !== '[object Object]') {
+      throw new Error('亲，参数不是一个对象呢！');
+    }
+    return value;
+  },
+  serialize(value: any) {
+    return value;
+  },
+});
+```
++ 使用自定义JSON类型例子一
+```
+// 输入参数
+@ArgsType()
+export class DefaultMutation {
+
+  @Field(() => JosnScalar, { nullable: true })
+  data: any;
+}
+  
+@Mutation(() => User, { description: '增加用户' })
+ async addUser(@Args() { data }: DefaultMutation, @Ctx() ctx: Context) {
+   // 这里的 data 指向 DefaultMutation 属性的data也就是any类型
+   const user = await ctx.service.user.createUser(data);
+
+   return user;
+}
+
+```
++ 使用自定义JSON类型例子二
+```
+@ArgsType()
+export class DefaultQuery {
+
+  @Field(() => JosnScalar, { nullable: true })
+  filter: any;
+
+  @Field(() => JosnScalar, { nullable: true })
+  order: any;
+
+  @Field(() => JosnScalar, { nullable: true })
+  page: any;
+}
+
+ // 使用
+ @Query(() => [User], { description: '查询用户列表' })
+ async getUser(@Args() { filter, order, page }: DefaultQuery, @Ctx() ctx: Context) {
+   return await ctx.service.user.filterUser(filter, order, page);
+ }
+```
+#### egg中 mongoose 的 transaction
++ 提取公用函数，封装到上下文ctx中
+```
+// extend/context.ts
+import { Context } from 'egg';
+
+export default {
+  // 获取session，回滚事务
+  async getSession(this: Context) {
+    // Start a session.
+    const session = await this.app.mongoose.startSession();
+    // Start a transaction
+    // 这里因为获取到的session也是要startTransaction，所以，就一并在这写掉
+    session.startTransaction();
+    return session
+  }
+}
+```
++ 事务使用
+mongodb的事务比较low，开启事务，需要副本集，否则会报： [Transaction numbers are only allowed on a replica set member or mongos](https://stackoverflow.com/questions/51461952/mongodb-v4-0-transaction-mongoerror-transaction-numbers-are-only-allowed-on-a)
+
+```
+
+ /**
+  * 测试事务
+  */
+  public async testErrorTransaction() {
+
+    const session: any = await this.ctx.getSession();
+    try {
+      const user = new UserModel();
+      user.userName = 'add user';
+      user.userNo = 103;
+      (await UserModel.create(user)).$session(session)
+
+      // 没有userNo将会报错
+      const user1 = new UserModel();
+      (await UserModel.create(user)).$session(session)
+      console.log(user1);
+
+      // 提交事务
+      await session.commitTransaction();
+    } catch (err) {
+      // 事务回滚
+      await session.abortTransaction();
+      throw err;
+    } finally {
+      await session.endSession();
+    }
+  }
+```
+这个骨架使用应该没有啥问题啦，有啥问题欢迎大家指出。谢谢！别忘记给我点星星哦，再次谢谢啦！
