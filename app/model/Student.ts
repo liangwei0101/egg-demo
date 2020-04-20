@@ -1,15 +1,14 @@
 
 import BaseModel from './BaseModel';
-import { InstanceType } from 'typegoose'
 import { ObjectType, Field, Int } from 'type-graphql';
-import { index, prop, ModelType, instanceMethod, staticMethod } from 'typegoose'
+import { index, getModelForClass, prop } from '@typegoose/typegoose';
 
 /**
   * 学生类
 */
 @ObjectType()
 @index({ userNo: 1 })
-export class Student extends BaseModel {
+export default class Student extends BaseModel {
 
   @prop({ required: true })
   @Field(() => Int, { description: "编号" })
@@ -20,8 +19,7 @@ export class Student extends BaseModel {
   userName: string;
 
   //#region（实例方法 和 实例方法）
-  @instanceMethod
-  public async userInstanceTestMethods(this: InstanceType<Student>) {
+  public async userInstanceTestMethods() {
 
     const user: Student = new Student();
     user.userName = '我是实例化方法测试';
@@ -30,8 +28,7 @@ export class Student extends BaseModel {
     return user;
   }
 
-  @staticMethod
-  public async userStaticTestMethods(this: ModelType<Student> & typeof Student) {
+  public static async userStaticTestMethods() {
 
     const user: Student = new Student();
     user.userName = '我是静态方法测试';
@@ -43,4 +40,4 @@ export class Student extends BaseModel {
   //#endregion
 }
 
-export const StudentModel = new Student().getModelForClass(Student);
+export const StudentModel = getModelForClass(Student);

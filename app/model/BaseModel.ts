@@ -1,11 +1,10 @@
 import { Field, ObjectType } from 'type-graphql';
-import { Typegoose, prop, pre } from 'typegoose';
+import { prop, pre, Typegoose } from '@typegoose/typegoose';
 
 /**
   * BaseModel
 */
-
-@pre<BaseModel>('save', function(next) {
+@pre<BaseModel>('save', function (next) {
   if (!this.createdAt || this.isNew) {
     this.createdAt = this.updatedAt = new Date()
   } else {
