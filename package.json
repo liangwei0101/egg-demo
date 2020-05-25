@@ -50,7 +50,7 @@
     "tslib": "^1.9.0",
     "tslint": "^5.20.1",
     "tslint-config-egg": "^1.0.0",
-    "typescript": "^3.7.2"
+    "typescript": "3.7.2"
   },
   "engines": {
     "node": ">=8.9.0"
