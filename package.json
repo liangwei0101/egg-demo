@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@typegoose/typegoose": "^6.4.0",
-    "apollo-server-koa": "^2.9.12",
+    "apollo-server-koa": "^2.14.2",
     "egg": "^2.6.1",
     "egg-cors": "^2.2.3",
     "egg-graphql": "^2.7.0",
